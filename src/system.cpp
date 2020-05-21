@@ -35,12 +35,11 @@ vector<Process>& System::Processes() {
     {
         std::string command = LinuxParser::Command(pid[i]);
         std::string user = LinuxParser::User(pid[i]);
-        long uptime = LinuxParser::UpTime(pid[i]);
+        long int uptime = LinuxParser::UpTime(pid[i]);
         std::string ram = LinuxParser::Ram(pid[i]);
         float cpu_utilisation = LinuxParser::CpuUtilization(pid[i]);
-        Process proc(pid[i], command, user, uptime, ram, cpu_utilisation);
         if(unique_pid.find(pid[i]) == unique_pid.end())             // C++20 provides set::contains()
-            processes_.emplace_back(proc);
+            processes_.emplace_back(pid[i], user, command, ram, uptime, cpu_utilisation);
     }  
     std::sort(processes_.begin(), processes_.end());
     return processes_; }

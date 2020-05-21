@@ -11,8 +11,8 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid, std::string command, std::string user, long uptime, std::string ram, float cpu_utilisation) 
-    : pid_(pid), command_(command), user_(user), uptime_(uptime), ram_(ram), cpu_utilisation_(cpu_utilisation){
+Process::Process(int pid, std::string user, std::string command, std::string ram, long int uptime, float cpu_utilisation) 
+    : pid_(pid), user_(user), command_(command), ram_(ram), uptime_(uptime), cpu_utilisation_(cpu_utilisation){
 };
 
 // TODO: Return this process's ID

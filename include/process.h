@@ -10,7 +10,7 @@ It contains relevant attributes as shown below
 */
 class Process {
  public:
-  Process(int pid, std::string command, std::string user, long uptime, std::string ram, float cpu_utilisation);
+  Process(int pid, std::string user, std::string command, std::string ram, long int uptime, float cpu_utilisation);
   int Pid();                               // TODO: See src/process.cpp
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
@@ -25,7 +25,7 @@ class Process {
     std::string user_{};
     std::string command_{};
     std::string ram_{};
-    long int uptime_{};
+    long int uptime_{0};
     float cpu_utilisation_{0.0};
 };
 

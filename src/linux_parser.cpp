@@ -26,7 +26,7 @@ string LinuxParser::OperatingSystem() {
       while (linestream >> key >> value) {
         if (key == "PRETTY_NAME") {
           std::replace(value.begin(), value.end(), '_', ' ');
-          filestream.close();
+          break;
         }
       }
     }
@@ -77,16 +77,14 @@ float LinuxParser::MemoryUtilization() {
   {
     while(std::getline(filestream, line))
     {
-      std::replace(line.begin(), line.end(), ':', ' ');
+      //std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
-      while(linestream >> word >> value)
-      {
-        mmap[word] = value;
-      }
-      used_memory = mmap["MemTotal"] - mmap["MemFree"];
+      linestream >> word >> value;
+      mmap[word] = value;
     }
+    used_memory = mmap["MemTotal:"] - mmap["MemFree:"];
   }
-  return used_memory / mmap["MemTotal"]; }
+  return used_memory / mmap["MemTotal:"]; }
  
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { 
@@ -98,7 +96,6 @@ long LinuxParser::UpTime() {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     linestream >> first;
-    filestream.close();
   }
   return first; 
 }
@@ -172,7 +169,7 @@ int LinuxParser::TotalProcesses() {
       if(key == "processes")
       {
         linestream >> value;
-        filestream.close();
+        break;
       }
     }
   }
@@ -193,7 +190,7 @@ int LinuxParser::RunningProcesses() {
       if(key == "procs_running")
       {
         linestream >> value;
-        filestream.close();
+        break;
       }
     }
   }
@@ -247,7 +244,7 @@ std::string LinuxParser::Ram(int pid) {
         linestream >> value;
         memsize = std::stoi(value) / 1000;
         value = std::to_string(memsize);
-        filestream.close();
+        break;
       }
     }
   }
@@ -266,7 +263,6 @@ string LinuxParser::Uid(int pid) {
       if(key == "Uid:")
       {
         linestream >> value;
-        filestream.close();
       }
   }
   return value;
