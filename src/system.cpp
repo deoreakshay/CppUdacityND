@@ -26,6 +26,7 @@ vector<Process>& System::Processes() {
     vector<int> pid{LinuxParser::Pids()};
 
     std::set<int> unique_pid;
+    processes_.clear();
     for(Process &process : processes_)
     {
         unique_pid.insert(process.Pid());
