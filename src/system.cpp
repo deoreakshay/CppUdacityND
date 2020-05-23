@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
 
 #include "process.h"
 #include "processor.h"
@@ -23,24 +24,31 @@ Processor& System::Cpu() {
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() { 
-    vector<int> pid{LinuxParser::Pids()};
-
-    std::set<int> unique_pid;
+    vector<int> _pids{LinuxParser::Pids()};
     processes_.clear();
-    for(Process &process : processes_)
-    {
-        unique_pid.insert(process.Pid());
-    }
 
-    for(int i : pid)
+    for(int pid : _pids)
     {
-        std::string command = LinuxParser::Command(pid[i]);
-        std::string user = LinuxParser::User(pid[i]);
-        long int uptime = LinuxParser::UpTime(pid[i]);
-        std::string ram = LinuxParser::Ram(pid[i]);
-        float cpu_utilisation = LinuxParser::CpuUtilization(pid[i]);
-        if(unique_pid.find(pid[i]) == unique_pid.end())             // C++20 provides set::contains()
-            processes_.emplace_back(pid[i], user, command, ram, uptime, cpu_utilisation);
+        std::string command = LinuxParser::Command(pid);
+        std::string user = LinuxParser::User(pid);
+        long int uptime = LinuxParser::UpTime(pid);
+        std::string ram = LinuxParser::Ram(pid);
+        float cpu_utilisation = LinuxParser::CpuUtilization(pid);
+    
+        //processes_.emplace_back(pid, user, command, ram, uptime, cpu_utilisation);
+        auto result = std::find_if(processes_.begin(), processes_.end(), [&pid](const auto &iter)-> bool{ return pid == iter.Pid();});
+        if(result != processes_.end())
+        {
+            result->SetCommand(command);
+            result->SetUser(user);
+            result->SetUptime(uptime);
+            result->SetRam(ram);
+            result->SetCpu(cpu_utilisation);
+        }
+        else
+        {
+            processes_.emplace_back(pid, user, command, ram, uptime, cpu_utilisation);
+        }
     }  
     std::sort(processes_.begin(), processes_.end());
     return processes_; }
@@ -63,6 +71,6 @@ int System::TotalProcesses() { return LinuxParser::TotalProcesses(); }
 
 // TODO: Return the number of seconds since the system started running
 long int System::UpTime() { 
-    long int time = LinuxParser::UpTime() / sysconf(_SC_CLK_TCK) ;
+    long int time = LinuxParser::UpTime() ;
     return time; 
 }

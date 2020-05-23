@@ -223,7 +223,7 @@ float LinuxParser::CpuUtilization(int pid)
 
     total_time = std::stol(fourteen) + std::stol(fifteen) + std::stol(sixteen) + std::stol(seventen);
     seconds = LinuxParser::UpTime() - (std::stol(twentytwo) / sysconf(_SC_CLK_TCK));
-    cpu_usage = ((float)(total_time / sysconf(_SC_CLK_TCK)) / seconds );   
+    cpu_usage = (float)total_time / sysconf(_SC_CLK_TCK) / seconds ;   
   }
   return cpu_usage;
 }
@@ -238,10 +238,9 @@ std::string LinuxParser::Ram(int pid) {
     while(std::getline(filestream, line))
     {
       std::istringstream linestream(line);
-      linestream >> key;
+      linestream >> key >> value;
       if(key == "VmSize:")
       {
-        linestream >> value;
         memsize = std::stoi(value) / 1000;
         value = std::to_string(memsize);
         break;
@@ -293,8 +292,8 @@ string LinuxParser::User(int pid) {
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
 long int LinuxParser::UpTime(int pid) { 
-  std::string line;
-  long int uptime, value;
+  std::string line, value, first;
+  long int uptime;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if(filestream.is_open())
   {
@@ -302,10 +301,9 @@ long int LinuxParser::UpTime(int pid) {
     std::istringstream linestream(line);
     for(int i = 1 ; i <= 22; i++)
     {
-      if(i == 22)
-        linestream >> value;
+      linestream >> value;
     }
-    uptime = value / sysconf(_SC_CLK_TCK);
+    uptime = std::stol(value) / sysconf(_SC_CLK_TCK);
   }
   return uptime; 
 }
